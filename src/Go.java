@@ -58,6 +58,10 @@ class Go {
 			case "exit":
 				break;
 			case "undo":
+				boardMaster.undo();
+				break;
+			case "redo":
+				boardMaster.redo();
 				break;
 			default:
 				System.out.println("No such command ("+command+")");

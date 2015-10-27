@@ -1,9 +1,11 @@
 import java.util.ArrayList;
-
+import java.util.Stack;
 
 public class BoardMaster {
 	int[] boardSize;
 	int[][] board;
+	Stack<int[][]> undoStack;
+	Stack<int[][]> redoStack;
 	boolean[][] boardMemo;
 	boolean gameover;
 	
@@ -19,6 +21,10 @@ public class BoardMaster {
 		board[6][6] = 1;
 		board[5][6] = 2;
 		board[6][5] = 2;
+		
+		undoStack = new Stack<int[][]>();
+		undoStack.push(board);
+		redoStack = new Stack<int[][]>();
 
 		boardMemo = new boolean[boardSize[0]][boardSize[1]];
 
@@ -32,36 +38,11 @@ public class BoardMaster {
 	}
 
 	
-	public void printBoard() {
-		System.out.println();
-		System.out.println("<Turn "+turn+">");
-		System.out.print("00.");
-		for (int col = 0; col < boardSize[0]; col++) {
-			if (col < 9) System.out.print("0");
-			System.out.print((1+col)+".");
-		}
-		System.out.println();
-		for (int row = 0; row < boardSize[0]; row++) {
-			if (row < 9) System.out.print("0");
-			System.out.print((1+row)+".");
-			for (int col = 0; col < boardSize[1]; col++) {
-				if (board[row][col] == 0) {
-					System.out.print(" . ");
-				}
-				else System.out.print(" "+board[row][col]+" ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-
-		printStatus();
-	}
-	
 	public void makeMove(int row, int col) throws Exception {
 		if (board[row][col] != 0) {
 			throw new Exception();
 		}
-		int[][] previous = board;
+		undoStack.push(board);
 		int player = turn % 2;
 		if (player == 0) {
 			player = 2;
@@ -70,8 +51,29 @@ public class BoardMaster {
 		board[row][col] = player;
 		
 		checkMove(row, col);
+		turn++;
 	}
-		
+	
+	public void undo() {
+		if (this.undoStack.empty()) {
+			return;
+		}
+		int[][] previousBoard = this.undoStack.pop();
+		this.board = previousBoard;
+		this.redoStack.push(previousBoard);
+		this.turn--;
+	}
+	
+	public void redo() {
+		if (this.redoStack.empty()) {
+			return;
+		}
+		int[][] originalBoard = this.redoStack.pop();
+		this.board = originalBoard;
+		this.undoStack.push(originalBoard);
+		this.turn++;
+	}
+	
 	private void checkMove(int row, int col) throws Exception {
 		ArrayList < int[] > adj = findAdj4(row, col);
 
@@ -158,6 +160,31 @@ public class BoardMaster {
 		System.out.println();
 	}
 
+	public void printBoard() {
+		System.out.println();
+		System.out.println("<Turn "+turn+">");
+		System.out.print("00.");
+		for (int col = 0; col < boardSize[0]; col++) {
+			if (col < 9) System.out.print("0");
+			System.out.print((1+col)+".");
+		}
+		System.out.println();
+		for (int row = 0; row < boardSize[0]; row++) {
+			if (row < 9) System.out.print("0");
+			System.out.print((1+row)+".");
+			for (int col = 0; col < boardSize[1]; col++) {
+				if (board[row][col] == 0) {
+					System.out.print(" . ");
+				}
+				else System.out.print(" "+board[row][col]+" ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+
+		printStatus();
+	}
+	
 	public void printMemoBoard() {
 		System.out.print("00.");
 		for (int col = 0; col < boardSize[0]; col++) {
