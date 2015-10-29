@@ -1,11 +1,8 @@
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class Board {
 	int[] boardSize;
 	int[][] board;
-	Stack<int[][]> undoStack;
-	Stack<int[][]> redoStack;
 	boolean[][] boardMemo;
 	
 	int turn;
@@ -21,10 +18,6 @@ public class Board {
 		board[5][6] = 2;
 		board[6][5] = 2;
 		
-		undoStack = new Stack<int[][]>();
-		undoStack.push(board);
-		redoStack = new Stack<int[][]>();
-
 		boardMemo = new boolean[boardSize[0]][boardSize[1]];
 
 		turn = 1;
@@ -49,33 +42,12 @@ public class Board {
 		if (board[row][col] != 0) {
 			throw new Exception();
 		}
-		undoStack.push(board);
 
 		int player = getPlayer();
 		board[row][col] = player;
 		
 		checkMove(row, col);
 		turn++;
-	}
-	
-	public void undo() {
-		if (this.undoStack.empty()) {
-			return;
-		}
-		int[][] previousBoard = this.undoStack.pop();
-		this.board = previousBoard;
-		this.redoStack.push(previousBoard);
-		this.turn--;
-	}
-	
-	public void redo() {
-		if (this.redoStack.empty()) {
-			return;
-		}
-		int[][] originalBoard = this.redoStack.pop();
-		this.board = originalBoard;
-		this.undoStack.push(originalBoard);
-		this.turn++;
 	}
 	
 	private void checkMove(int row, int col) throws Exception {
@@ -116,8 +88,6 @@ public class Board {
 			boardMemo[row][col] = true;
 		}
 		
-//		printMemoBoard();
-
 		ArrayList < int[] > adj = BoardLibrary.findAdj4(this.boardSize, row, col);
 
 		for (int i = 0; i < adj.size(); i++) {
@@ -178,7 +148,6 @@ public class Board {
 			}
 			System.out.println();
 		}
-		System.out.println();
 	}
 	
 	public void printTurn() {

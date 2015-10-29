@@ -1,4 +1,4 @@
 
 public interface GoCommand {
-	public void execute(Board board) throws Exception;
+	public void execute(Board board, BoardMaster boardMaster) throws Exception;
 }

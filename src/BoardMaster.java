@@ -1,38 +1,37 @@
+import java.util.Stack;
 
 public class BoardMaster {
-	private Board board;
-	private boolean gameOver = false;
-	
+	Stack<Board> undoStack;
+	Stack<Board> redoStack;
+
 	public BoardMaster() {
-		this.board = new Board();
-		this.board.printGame();
+		undoStack = new Stack<Board>();
+		redoStack = new Stack<Board>();
 	}
 	
-	public boolean isGameOver() {
-		// Capturing Game Rule
-		return this.gameOver;
+	public void pushToUndo(Board board) {
+		
+		this.undoStack.push(board);
 	}
 
-	public void execCommand(GoCommand command) {
-		try {
-			command.execute(this.board);	
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+	public void pushToRedo(Board board) {
 		
-		String winner = "";
-		if (this.board.countCaptured[1] > 0) {
-			winner = "1";
-			this.gameOver = true;
+		this.redoStack.push(board);
+	}
+	
+	public void undo(Board board) {
+		if (this.undoStack.empty()) {
+			return;
 		}
-		else if (this.board.countCaptured[2] > 0) {
-			winner = "2";
-			this.gameOver = true;
+		pushToRedo(board);
+		board = this.undoStack.pop();
+	}
+
+	public void redo(Board board) {
+		if (this.redoStack.empty()) {
+			return;
 		}
-		
-		this.board.printGame();
-		if (this.gameOver) {
-			System.out.println("Player" + winner + " Wins!");
-		}
+		pushToUndo(board);
+		board = this.redoStack.pop();
 	}
 }

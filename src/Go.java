@@ -4,7 +4,7 @@ class Go {
 	private boolean debugSwitch = false;
 	
 	private Scanner sc;
-	private BoardMaster boardMaster;
+	private GoMaster boardMaster;
 
 	public boolean debug(int input) {
 		if (debugSwitch) {
@@ -18,7 +18,7 @@ class Go {
 
 	public Go() {
 		sc = new Scanner(System.in);
-		boardMaster = new BoardMaster();
+		boardMaster = new GoMaster();
 	}
 	
 	public void run() {

@@ -5,9 +5,9 @@ public class RedoCommand implements GoCommand {
 	}
 
 	@Override
-	public void execute(Board board) throws Exception {
+	public void execute(Board board, BoardMaster boardMaster) throws Exception {
 		// TODO Auto-generated method stub
-
+		boardMaster.redo(board);
 	}
 
 }
