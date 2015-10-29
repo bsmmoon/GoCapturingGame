@@ -38,7 +38,7 @@ class Go {
 		return BoardLibrary.removeDoubleSpacing(commandLine.trim()).split(" ");
 	}
 
-	public void executeCommand(String commandLine, int player) throws Exception {
+	public void executeCommand(String commandLine) throws Exception {
 		String[] commandArr = readCommandArr(commandLine);
 		String command = commandArr[0];
 
@@ -69,16 +69,13 @@ class Go {
 	}
 
 	public void run() {
-		int player = 1;
 		while (!boardMaster.isGameOver()) {
 			try {
 				boardMaster.printBoard();
-
-				if (player == 1) System.out.print("Player1 ");
-				else System.out.print("Player2 ");
-
+				boardMaster.printTurn();
+								
 				String command = readCommandLine();
-				executeCommand(command, player);
+				executeCommand(command);
 
 				if (capturingRace) {
 					if (boardMaster.countCaptured[1] > 0) {
@@ -92,9 +89,6 @@ class Go {
 						break;
 					}
 				}
-
-				if (player == 1) player = 2;
-				else player = 1;
 			} catch (Exception e) {
 				System.out.println("Illegal Move");
 				System.out.println();

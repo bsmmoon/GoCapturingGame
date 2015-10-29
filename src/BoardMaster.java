@@ -37,17 +37,21 @@ public class BoardMaster {
 		return this.gameover;
 	}
 
+	public int getPlayer() {
+		int player = turn % 2;
+		if (player == 0) {
+			player = 2;
+		}
+		return player;
+	}
 	
 	public void makeMove(int row, int col) throws Exception {
 		if (board[row][col] != 0) {
 			throw new Exception();
 		}
 		undoStack.push(board);
-		int player = turn % 2;
-		if (player == 0) {
-			player = 2;
-		}
 
+		int player = getPlayer();
 		board[row][col] = player;
 		
 		checkMove(row, col);
@@ -80,7 +84,6 @@ public class BoardMaster {
 		boolean selfSurrounded = checkSurrounded(row, col);
 
 		int player = board[row][col];
-		clearSurrounded(false, player);
 
 		boolean captured = false;
 		for (int i = 0; i < adj.size(); i++) {
@@ -88,7 +91,10 @@ public class BoardMaster {
 			if (board[pos[0]][pos[1]] == board[row][col]) continue;
 			boolean surrounded = checkSurrounded(pos[0],pos[1]);
 			captured = captured || surrounded;
-			clearSurrounded(surrounded, player);
+			
+			if (surrounded) {
+				clearSurrounded(player);
+			}
 		}
 
 		if (!captured && selfSurrounded) {
@@ -97,18 +103,14 @@ public class BoardMaster {
 		}
 	}
 
-	private int clearSurrounded(boolean surrounded, int player) {
-		if (surrounded && false) printMemoBoard();
-
+	private int clearSurrounded(int player) {
 		int count = 0;
 
-		if (surrounded) {
-			for (int i = 0; i < boardSize[0]; i++) {
-				for (int j = 0; j < boardSize[1]; j++) {
-					if (boardMemo[i][j]) {
-						board[i][j] = 0;
-						count++;
-					}
+		for (int i = 0; i < boardSize[0]; i++) {
+			for (int j = 0; j < boardSize[1]; j++) {
+				if (boardMemo[i][j]) {
+					board[i][j] = 0;
+					count++;
 				}
 			}
 		}
@@ -133,14 +135,14 @@ public class BoardMaster {
 
 		ArrayList < int[] > adj = findAdj4(row, col);
 
-		if (false) {
-			System.out.print("["+(1+row)+","+(1+col)+"] ");
-			for (int i = 0; i < adj.size(); i++) {
-				int[] pos = adj.get(i);
-				System.out.print("("+(1+pos[0])+","+(1+pos[1])+") ");
-			}
-			System.out.println();
-		}
+//		if (false) {
+//			System.out.print("["+(1+row)+","+(1+col)+"] ");
+//			for (int i = 0; i < adj.size(); i++) {
+//				int[] pos = adj.get(i);
+//				System.out.print("("+(1+pos[0])+","+(1+pos[1])+") ");
+//			}
+//			System.out.println();
+//		}
 
 		for (int i = 0; i < adj.size(); i++) {
 			int[] pos = adj.get(i);
@@ -159,10 +161,12 @@ public class BoardMaster {
 		System.out.println("Player2 Captured: "+countCaptured[2]);
 		System.out.println();
 	}
+	
+	public void printTurn() {
+		System.out.print("<Turn "+turn+"> Player " + Integer.toString(getPlayer()));
+	}
 
 	public void printBoard() {
-		System.out.println();
-		System.out.println("<Turn "+turn+">");
 		System.out.print("00.");
 		for (int col = 0; col < boardSize[0]; col++) {
 			if (col < 9) System.out.print("0");
