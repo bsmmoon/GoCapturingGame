@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Board {
+public class Board implements Cloneable{
 	int[] boardSize;
 	int[][] board;
 	boolean[][] boardMemo;
@@ -8,20 +8,46 @@ public class Board {
 	int turn;
 	int[] countCaptured;
 	
-	public Board(){
-		boardSize = new int[2];
-		boardSize[0] = boardSize[1] = 13;
+	public Board(Board another) {
+		this.boardSize = new int[2];
+		for (int i = 0; i < another.boardSize.length; i++) {
+			this.boardSize[i] = another.boardSize[i];
+		}
 		
-		board = new int[boardSize[0]][boardSize[1]];
-		board[5][5] = 1;
-		board[6][6] = 1;
-		board[5][6] = 2;
-		board[6][5] = 2;
+		this.board = new int[this.boardSize[0]][this.boardSize[1]];
+		for (int i = 0; i < another.board.length; i++) {
+			for (int j = 0; j < another.board.length; j++) {
+				this.board[i][j] = another.board[i][j];				
+			}
+		}
 		
-		boardMemo = new boolean[boardSize[0]][boardSize[1]];
+		this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
+		this.turn = another.turn;
+		
+		this.countCaptured = new int[another.countCaptured.length];
+		for (int i = 0; i < another.countCaptured.length; i++) {
+			this.countCaptured[i] = another.countCaptured[i];
+		}
+	}
 
-		turn = 1;
-		countCaptured = new int[]{0,0,0};
+	protected Board clone() throws CloneNotSupportedException {
+		return (Board) super.clone();
+	}
+	
+	public Board(){
+		this.boardSize = new int[2];
+		this.boardSize[0] = this.boardSize[1] = 13;
+		
+		this.board = new int[this.boardSize[0]][this.boardSize[1]];
+		this.board[5][5] = 1;
+		this.board[6][6] = 1;
+		this.board[5][6] = 2;
+		this.board[6][5] = 2;
+		
+		this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
+
+		this.turn = 1;
+		this.countCaptured = new int[]{0,0,0};
 		
 		printBoard();
 	}

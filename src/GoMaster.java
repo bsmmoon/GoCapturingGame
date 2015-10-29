@@ -17,7 +17,7 @@ public class GoMaster {
 
 	public void execCommand(GoCommand command) {
 		try {
-			command.execute(this.board, this.boardMaster);	
+			this.board = command.execute(this.board, this.boardMaster);	
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
