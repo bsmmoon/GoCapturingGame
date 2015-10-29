@@ -28,6 +28,38 @@ class Go {
 		sc = new Scanner(System.in);
 		boardMaster = new BoardMaster();
 	}
+	
+	public GoCommand readCommand() {
+		
+		
+		System.out.print("Command: ");
+		String input = sc.nextLine();
+		String[] inputArr = BoardLibrary.removeDoubleSpacing(input.trim()).split(" ");
+		
+		String command = inputArr[0];
+		switch (command.toLowerCase()) {
+			case "move":
+				if (inputArr.length != 3) {
+					if (inputArr.length > 3) System.out.println("Too many arguments");
+					else System.out.println("Too little arguments");
+					break;
+				}
+				int row = Integer.parseInt(inputArr[1])-1;
+				int col = Integer.parseInt(inputArr[2])-1;
+				
+				
+				break;
+			case "exit":
+				break;
+			case "undo":
+				break;
+			case "redo":
+				break;
+			default:
+				System.out.println("No such command ("+command+")");
+		}
+
+	}
 
 	public String readCommandLine() {
 		System.out.print("Command: ");
