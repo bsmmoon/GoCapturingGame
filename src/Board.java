@@ -7,7 +7,6 @@ public class Board {
 	Stack<int[][]> undoStack;
 	Stack<int[][]> redoStack;
 	boolean[][] boardMemo;
-	boolean gameover;
 	
 	int turn;
 	int[] countCaptured;
@@ -28,21 +27,22 @@ public class Board {
 
 		boardMemo = new boolean[boardSize[0]][boardSize[1]];
 
-		gameover = false;
 		turn = 1;
 		countCaptured = new int[]{0,0,0};
+		
+		printBoard();
 	}
 	
-	public boolean isGameOver() {
-		return this.gameover;
-	}
-
 	public int getPlayer() {
 		int player = turn % 2;
 		if (player == 0) {
 			player = 2;
 		}
 		return player;
+	}
+	
+	public int[] getCountCaptured() {
+		return this.countCaptured;
 	}
 	
 	public void makeMove(int row, int col) throws Exception {
@@ -79,7 +79,7 @@ public class Board {
 	}
 	
 	private void checkMove(int row, int col) throws Exception {
-		ArrayList < int[] > adj = findAdj4(row, col);
+		ArrayList < int[] > adj = BoardLibrary.findAdj4(this.boardSize, row, col);
 
 		boolean selfSurrounded = checkSurrounded(row, col);
 
@@ -95,6 +95,8 @@ public class Board {
 			if (surrounded) {
 				clearSurrounded(player);
 			}
+			
+			boardMemo = new boolean[boardSize[0]][boardSize[1]];
 		}
 
 		if (!captured && selfSurrounded) {
@@ -103,6 +105,33 @@ public class Board {
 		}
 	}
 
+	private boolean checkSurrounded(int row, int col) {
+		if (board[row][col] == 0) return false;
+		return checkSurroundedRecurr(row, col);
+	}
+
+	public boolean checkSurroundedRecurr(int row, int col) {
+		int player = board[row][col];
+		if (!boardMemo[row][col]) {
+			boardMemo[row][col] = true;
+		}
+		
+//		printMemoBoard();
+
+		ArrayList < int[] > adj = BoardLibrary.findAdj4(this.boardSize, row, col);
+
+		for (int i = 0; i < adj.size(); i++) {
+			int[] pos = adj.get(i);
+			if (boardMemo[pos[0]][pos[1]]) continue;
+			if (board[pos[0]][pos[1]] == 0) return false;
+			else if (board[pos[0]][pos[1]] == player) {
+				if (!checkSurroundedRecurr(pos[0], pos[1])) return false;
+			}
+		}
+
+		return true;
+	}
+	
 	private int clearSurrounded(int player) {
 		int count = 0;
 
@@ -116,44 +145,13 @@ public class Board {
 		}
 		
 		countCaptured[player] += count;
-		boardMemo = new boolean[boardSize[0]][boardSize[1]];
-
 		return count;
 	}
-
-	private boolean checkSurrounded(int row, int col) {
-		if (board[row][col] == 0) return false;
-		return checkSurroundedRecurr(row, col);
-	}
-
-	public boolean checkSurroundedRecurr(int row, int col) {
-		int player = board[row][col];
-		if (boardMemo[row][col]) {
-			System.out.println("wut");
-		}
-		else boardMemo[row][col] = true;
-
-		ArrayList < int[] > adj = findAdj4(row, col);
-
-//		if (false) {
-//			System.out.print("["+(1+row)+","+(1+col)+"] ");
-//			for (int i = 0; i < adj.size(); i++) {
-//				int[] pos = adj.get(i);
-//				System.out.print("("+(1+pos[0])+","+(1+pos[1])+") ");
-//			}
-//			System.out.println();
-//		}
-
-		for (int i = 0; i < adj.size(); i++) {
-			int[] pos = adj.get(i);
-			if (boardMemo[pos[0]][pos[1]]) continue;
-			if (board[pos[0]][pos[1]] == 0) return false;
-			else if (board[pos[0]][pos[1]] == player) {
-				if (!checkSurroundedRecurr(pos[0], pos[1])) return false;
-			}
-		}
-
-		return true;
+	
+	public void printGame() {
+		printBoard();
+		printStatus();
+		printTurn();
 	}
 
 	public void printStatus() {
@@ -162,10 +160,6 @@ public class Board {
 		System.out.println();
 	}
 	
-	public void printTurn() {
-		System.out.print("<Turn "+turn+"> Player " + Integer.toString(getPlayer()));
-	}
-
 	public void printBoard() {
 		System.out.print("00.");
 		for (int col = 0; col < boardSize[0]; col++) {
@@ -185,10 +179,12 @@ public class Board {
 			System.out.println();
 		}
 		System.out.println();
-
-		printStatus();
 	}
 	
+	public void printTurn() {
+		System.out.println("<Turn "+turn+"> Player " + Integer.toString(getPlayer()));
+	}
+
 	public void printMemoBoard() {
 		System.out.print("00.");
 		for (int col = 0; col < boardSize[0]; col++) {
@@ -211,18 +207,4 @@ public class Board {
 		}
 		System.out.println();
 	}
-
-	public ArrayList < int[] > findAdj4(int row, int col) {
-		ArrayList < int[] > out = new ArrayList < int[] > ();
-		if (col+1 < boardSize[1])
-			out.add(new int[]{row, col+1});
-		if (col-1 >= 0)
-			out.add(new int[]{row, col-1});
-		if (row+1 < boardSize[0])
-			out.add(new int[]{row+1, col});
-		if (row-1 >= 0)
-			out.add(new int[]{row-1, col});
-		return out;
-	}
-
 }
