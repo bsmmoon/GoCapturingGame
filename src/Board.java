@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Board implements Cloneable{
+public class Board {
 	int[] boardSize;
 	int[][] board;
 	boolean[][] boardMemo;
@@ -8,6 +8,26 @@ public class Board implements Cloneable{
 	int turn;
 	int[] countCaptured;
 	
+	public Board(){
+		this.boardSize = new int[2];
+		this.boardSize[0] = this.boardSize[1] = 13;
+		
+		this.board = new int[this.boardSize[0]][this.boardSize[1]];
+		this.board[5][5] = 1;
+		this.board[6][6] = 1;
+		this.board[5][6] = 2;
+		this.board[6][5] = 2;
+		
+		this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
+
+		this.turn = 1;
+		this.countCaptured = new int[]{0,0,0};
+		
+		printBoard();
+	}
+	
+	// Equal sign copies the value iff it is primitive; otherwise it copies the reference.
+	// Therefore, non-primitives should be broken down into primitive and copied piece by piece.
 	public Board(Board another) {
 		this.boardSize = new int[2];
 		for (int i = 0; i < another.boardSize.length; i++) {
@@ -30,28 +50,6 @@ public class Board implements Cloneable{
 		}
 	}
 
-	protected Board clone() throws CloneNotSupportedException {
-		return (Board) super.clone();
-	}
-	
-	public Board(){
-		this.boardSize = new int[2];
-		this.boardSize[0] = this.boardSize[1] = 13;
-		
-		this.board = new int[this.boardSize[0]][this.boardSize[1]];
-		this.board[5][5] = 1;
-		this.board[6][6] = 1;
-		this.board[5][6] = 2;
-		this.board[6][5] = 2;
-		
-		this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
-
-		this.turn = 1;
-		this.countCaptured = new int[]{0,0,0};
-		
-		printBoard();
-	}
-	
 	public int getPlayer() {
 		int player = turn % 2;
 		if (player == 0) {
