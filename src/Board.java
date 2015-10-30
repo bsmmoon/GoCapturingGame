@@ -78,6 +78,7 @@ public class Board {
 		ArrayList < int[] > adj = BoardLibrary.findAdj4(this.boardSize, row, col);
 
 		boolean selfSurrounded = checkSurrounded(row, col);
+		this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
 
 		int player = board[row][col];
 
@@ -92,7 +93,7 @@ public class Board {
 				clearSurrounded(player);
 			}
 			
-			boardMemo = new boolean[boardSize[0]][boardSize[1]];
+			this.boardMemo = new boolean[this.boardSize[0]][this.boardSize[1]];
 		}
 
 		if (!captured && selfSurrounded) {

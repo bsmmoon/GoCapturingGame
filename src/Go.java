@@ -22,7 +22,7 @@ class Go {
 	}
 	
 	public void run() {
-		while (!boardMaster.isGameOver()) {
+		while (true) {
 			try {
 				GoCommand command = readCommand();
 				this.boardMaster.execCommand(command);
